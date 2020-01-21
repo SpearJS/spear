@@ -13,11 +13,11 @@ function cleanHeader(header){
             }
             return header;
         }
-        throw new Error('invalid header format');
+        else
+            throw new Error('invalid header format');
     }
-    else{
-        header = {}
-    }
+    else
+        header = {};
     return header;
 }
 
@@ -31,6 +31,8 @@ function addHeaderIfNotExists(header, key, value){
 
 
 function mapBodyAndHeader(body, header){
+    header = cleanHeader(header);
+
     if(typeof body === 'object'){
         if(Array.isArray()){
             body = {data : body};
@@ -45,7 +47,9 @@ function mapBodyAndHeader(body, header){
         body = String(body);
         header = addHeaderIfNotExists(header, 'Content-Type', 'text/html');
     }
-    header['Content-Length'] = lengthInUTF8(body);
+    if(typeof body !== 'undefined' || body !== null)
+        header['Content-Length'] = lengthInUTF8(body);
+    
     return {
         header : header,
         body : body
@@ -57,19 +61,86 @@ httpResponse = {};
 
 
 httpResponse.OK = function OK(body, header=null){
-    header = cleanHeader(header);
-    var response = mapBodyAndHeader(header, body);
+    if(typeof body === 'undefined' || body === null){
+        throw new Error('OK response required body');
+    }
+    var response = mapBodyAndHeader(body, header);
     response.statusCode = 200;
     return response;
 }
 
-httpResponse.NotFound = function(body=null, header=null){
-    header = cleanHeader(header);
-    if(body === null){
-        body = '404 Not Found';
-    }
+httpResponse.Created = function Created(body='', header=null){
+    response = mapBodyAndHeader(body, header);
+    response.statusCode = 201;
+    return response;
+}
+
+httpResponse.Accepted = function Accepted(body='', header=null){
+    response = mapBodyAndHeader(body, header);
+    response.statusCode = 202;
+    return response;
+}
+
+
+httpResponse.BadRequest = function BadRequest(body="Bad Request", header=null){
+    response = mapBodyAndHeader(body, header);
+    response.statusCode = 400;
+    return response;
+}
+
+httpResponse.Unauthorized = function Unauthorized(body="Unauthorized", header=null){
+    response = mapBodyAndHeader(body, header);
+    response.statusCode = 401;
+    return response;
+}
+
+httpResponse.Forbidden = function Forbidden(body="Forbidden", header=null){
+    response = mapBodyAndHeader(body, header);
+    response.statusCode = 403;
+    return response;
+}
+
+httpResponse.NotFound = function(body="Not Found", header=null){
     response = mapBodyAndHeader(body, header);
     response.statusCode = 404;
+    return response;
+}
+
+httpResponse.MethodNotAllowed = function MethodNotAllowed(body="Method Not Allowed", header=null){
+    response = mapBodyAndHeader(body, header);
+    response.statusCode = 405;
+    return response;
+}
+
+httpResponse.NotAcceptable = function NotAcceptable(body="Not Acceptable", header=null){
+    response = mapBodyAndHeader(body, header);
+    response.statusCode = 406;
+    return response;
+}
+
+httpResponse.InternalServerError = function InternalServerError(body="Internal Server Error", header=null){
+    response = mapBodyAndHeader(body, header);
+    response.statusCode = 500;
+    return response;
+}
+
+httpResponse.NotImplemented = function NotImplemented(body="Not Implemented", header=null){
+    response = mapBodyAndHeader(body, header);
+    response.statusCode = 501;
+    return response;
+}
+
+httpResponse.BadGateway = function BadGateway(body="Bad Gateway", header=null){
+    response = mapBodyAndHeader(body, header);
+    response.statusCode = 502;
+    return response;
+}
+
+httpResponse.ServiceUnavailable = function ServiceUnavailable(body="Service Unavailable", header=null){
+    // default `Retry-After` 600 sec
+    response = mapBodyAndHeader(body, header);
+    response.header = addHeaderIfNotExists(response.header, 'Retry-After', 600);
+    response.statusCode = 503;
     return response;
 }
 
