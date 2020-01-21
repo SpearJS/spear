@@ -23,7 +23,6 @@ server.start = function start() {
 
         // @TODO handle the last slash '/' in url pathname
         
-        
         if(typeof __controllerMap[req.method] === 'undefined'){
             // server error
             return serverError(req, res);
