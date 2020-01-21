@@ -32,7 +32,6 @@ function addHeaderIfNotExists(header, key, value){
 
 function mapBodyAndHeader(body, header){
     header = cleanHeader(header);
-
     if(typeof body === 'object'){
         if(Array.isArray()){
             body = {data : body};
@@ -47,9 +46,9 @@ function mapBodyAndHeader(body, header){
         body = String(body);
         header = addHeaderIfNotExists(header, 'Content-Type', 'text/html');
     }
-    if(typeof body !== 'undefined' || body !== null)
+    if(!(body === null || typeof body === 'undefined')){
         header['Content-Length'] = lengthInUTF8(body);
-    
+    }
     return {
         header : header,
         body : body
@@ -69,13 +68,13 @@ httpResponse.OK = function OK(body, header=null){
     return response;
 }
 
-httpResponse.Created = function Created(body='', header=null){
+httpResponse.Created = function Created(body, header=null){
     response = mapBodyAndHeader(body, header);
     response.statusCode = 201;
     return response;
 }
 
-httpResponse.Accepted = function Accepted(body='', header=null){
+httpResponse.Accepted = function Accepted(body, header=null){
     response = mapBodyAndHeader(body, header);
     response.statusCode = 202;
     return response;
