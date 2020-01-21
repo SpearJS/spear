@@ -1,11 +1,12 @@
 var http = require('http');
 var url = require('url');
 var __controllerMap = require('./router').__controllerMap;
+var cleanPrefixSuffix = require('./router').cleanPrefixSuffix;
 
 
-var serverError = function serverError(req, res){
+var serverError = function serverError(req, res, parsedUrl){
+    console.log(`${req.method} ${parsedUrl.pathname} 500 HTTP/1.1`);
     res.writeHead(500, {});
-    res.write('Server Error');
     return res.end();
 }
 
@@ -14,21 +15,20 @@ var server = {};
 
 server.start = function start() {
     http.createServer(function(req, res){
-        var uri = url.parse(req.url, true);
-        // @TODO handle the last slash '/' in url pathname
-    
+        var parsedUrl = url.parse(req.url, true);
         if(typeof __controllerMap[req.method] === 'undefined'){
             // server error
-            return serverError(req, res);
+            return serverError(req, res, parsedUrl);
         }
         else{
-            var result = __controllerMap[req.method].find(item=> item.path === uri.pathname);
+            var cleanUrl = cleanPrefixSuffix(parsedUrl.pathname); 
+            var result = __controllerMap[req.method].find(item=> item.path === cleanUrl);
             if(result){            
                 // filter the request here
                 // check all credentials and middleware
 
-                var controllerResponse = result.controller(req, res);
-                console.log(`${req.method} ${uri.pathname} ${controllerResponse.statusCode} HTTP/1.1`);
+                var controllerResponse = result.controller(req, res, parsedUrl);
+                console.log(`${req.method} ${parsedUrl.pathname} ${controllerResponse.statusCode} HTTP/1.1`);
                 if(res.__proto__ === controllerResponse.__proto__){
                     // controller response with `res` object
                     return controllerResponse;
@@ -41,7 +41,7 @@ server.start = function start() {
                 return res.end();
             }
             else{
-                return serverError(req,res);
+                return serverError(req,res, parsedUrl);
             }
         }
     }).listen(3001);
