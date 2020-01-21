@@ -1,6 +1,11 @@
 var http = require('http');
 var url = require('url');
 let appMiddleware=require('../core/middleware/appMiddleware')
+let cors=require('../core/builtinMiddleware/cors')
+let cookie=require('../core/builtinMiddleware/cookies')
+let cache=require('../core/builtinMiddleware/cache')
+
+
 var __controllerMap = require('./router').__controllerMap;
 
 // middleware
@@ -43,6 +48,9 @@ server.start = function start() {
     }).listen(3001);
 }
 
+
 server.use=appMiddleware.use
+
+
 
 module.exports = server;

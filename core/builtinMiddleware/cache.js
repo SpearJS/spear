@@ -1,11 +1,17 @@
 function Cache(){
 }
 
-Cache.prototype.setCacheControl=function(cacheConfig){
+Cache.prototype.useCacheControl=function(cacheConfig){
     return (req,res,next)=>{
-        res.setHeader('Cache-Control',cacheConfig)
+        if(cacheConfig.length)
+            res.setHeader('Cache-Control',cacheConfig)
+        res.setCacheControl=(cacheConfig={})=>this.setCacheControl(cacheConfig,res)
         next()
     }
+}
+
+Cache.prototype.setCacheControl=function(cacheConfig,res){
+        res.setHeader('Cache-Control',cacheConfig)
 }
 
 module.exports=new Cache()
