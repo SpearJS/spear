@@ -23,8 +23,22 @@ server.start = function start() {
         }
         else{
             var result = __controllerMap[req.method].find(item=> item.path === uri.pathname);
-            if(result){
-                return result.controller(req, res);
+            if(result){            
+                // filter the request here
+                // check all credentials and middleware
+
+                var controllerResponse = result.controller(req, res);
+                console.log(`${req.method} ${uri.pathname} ${controllerResponse.statusCode} HTTP/1.1`);
+                if(res.__proto__ === controllerResponse.__proto__){
+                    // controller response with `res` object
+                    return controllerResponse;
+                }
+                // controller response with custom 'httpResponse' api
+                res.writeHead(controllerResponse.statusCode, controllerResponse.header);
+                if(typeof controllerResponse.body !== 'undefined'){
+                    res.write(controllerResponse.body);
+                }
+                return res.end();
             }
             else{
                 return serverError(req,res);
