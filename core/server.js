@@ -33,13 +33,27 @@ server.start = function start() {
         }
         else{
             var result = __controllerMap[req.method].find(item=> item.path === uri.pathname);
-            if(result){
+            if(result){ 
                 // applying middleware in route
                 if(typeof result.options==='function'){
                     appMiddleware.use(result.path,result.options(req,res,next))
                     middleware.apply(result.path,req,res)
+                }           
+                // filter the request here
+                // check all credentials and middleware
+
+                var controllerResponse = result.controller(req, res);
+                console.log(`${req.method} ${uri.pathname} ${controllerResponse.statusCode} HTTP/1.1`);
+                if(res.__proto__ === controllerResponse.__proto__){
+                    // controller response with `res` object
+                    return controllerResponse;
                 }
-                return result.controller(req, res);
+                // controller response with custom 'httpResponse' api
+                res.writeHead(controllerResponse.statusCode, controllerResponse.header);
+                if(typeof controllerResponse.body !== 'undefined'){
+                    res.write(controllerResponse.body);
+                }
+                return res.end();
             }
             else{
                 return serverError(req,res);
