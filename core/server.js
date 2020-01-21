@@ -20,7 +20,6 @@ server.start = function start() {
         var uri = url.parse(req.url, true);
         // apply 'root=/' middleware
         middleware.apply('',req,res)
-
         // @TODO handle the last slash '/' in url pathname
         
         if(typeof __controllerMap[req.method] === 'undefined'){
