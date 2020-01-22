@@ -27,7 +27,7 @@ server.start = function start() {
                 // filter the request here
                 // check all credentials and middleware
 
-                var controllerResponse = result.controller(req, res, parsedUrl);
+                var controllerResponse = result.controller(req, res);
                 console.log(`${req.method} ${parsedUrl.pathname} ${controllerResponse.statusCode} HTTP/1.1`);
                 if(res.__proto__ === controllerResponse.__proto__){
                     // controller response with `res` object

@@ -10,12 +10,16 @@ var __controllerMap = {
 };
 
 function cleanPrefixSuffix(path){
+    if(typeof path !== 'string'){
+        throw new Error('invalid url path');
+    }
     if(path.startsWith('/') === false){
         path = '/'+path;
     }
     if(path.endsWith('/') === false){
         path = path+'/'
     }
+    return path;
 }
 
 
