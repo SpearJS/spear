@@ -17,6 +17,9 @@ MiddlewarePipeline.prototype.use=function (path,callback){
 MiddlewarePipeline.prototype.apply=function (path,req,res){
     let middlewareList=this.mapper[path]
     
+    // console.log('---->\n\n',path,'<------\n\n\n');
+    
+
     if(!!middlewareList===false)
         return
         

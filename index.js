@@ -7,7 +7,7 @@ let cookie=require('./core/builtinMiddleware/http/cookies')
 let cors=require('./core/builtinMiddleware/http/cors')
 
 var routing = function(){
-    router.get('/user2/', function(req,res){
+    router.get('/api/user2/', function(req,res){
         console.log("hello");
         res.setCookie("token2","Token2===",{"Expires":"Wed, 21 Oct 2021 07:28:00 GMT","httpOnly":true})
         res.setCacheControl("no store")
@@ -21,6 +21,6 @@ var routing = function(){
 server.use(cache.useCacheControl())
 server.use(cookie.useCookie())
 server.use(cors.allowAnyOrigin())
-
-server.use('/api/user',(req,res,next)=>{console.log("m1");next()},routing())
+server.use('/api/user2/',(req,res,next)=>{console.log("akash");next()})
+server.use((req,res,next)=>{console.log("m1");next()},routing())
 server.start();

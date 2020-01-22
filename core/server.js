@@ -1,7 +1,7 @@
 var http = require('http');
 var url = require('url');
 let appMiddleware=require('../core/middleware/appMiddleware')
-let middleware=require('./middleware/middlewarePipeline')
+let middlewarePipeline=require('./middleware/middlewarePipeline')
 
 
 var __controllerMap = require('./router').__controllerMap;
@@ -21,7 +21,7 @@ server.start = function start() {
     http.createServer(function(req, res){
         var uri = url.parse(req.url, true);
         // apply 'root=/' middleware
-        middleware.apply('',req,res)
+        middlewarePipeline.apply('',req,res)
         // @TODO handle the last slash '/' in url pathname
         
         if(typeof __controllerMap[req.method] === 'undefined'){
@@ -34,7 +34,7 @@ server.start = function start() {
                 // applying middleware in route
                 if(typeof result.options==='function'){
                     appMiddleware.use(result.path,result.options(req,res,next))
-                    middleware.apply(result.path,req,res)
+                    middlewarePipeline.apply(result.path,req,res)
                 }           
                 // filter the request here
                 // check all credentials and middleware
