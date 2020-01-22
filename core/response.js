@@ -1,3 +1,5 @@
+let ServerResponse = require('http').ServerResponse;
+
 function lengthInUTF8(str){
     // @ref https://stackoverflow.com/questions/5515869/string-length-in-bytes-in-javascript#5515960
     // Matches only the 10.. bytes that are non-initial characters in a multi-byte sequence.
@@ -55,92 +57,94 @@ function mapBodyAndHeader(body, header){
     }
 }
 
+var response = {
+    header : {},
+    body : null
+};
 
-httpResponse = {};
 
 
-httpResponse.OK = function OK(body, header=null){
+
+ServerResponse.prototype.__responseMapper = function (statusCode){
+    this.writeHead(statusCode, response.header);
+    this.write(response.body);
+    return this.end();
+}
+
+
+ServerResponse.prototype.OK = function OK(body, header=null){
     if(typeof body === 'undefined' || body === null){
         throw new Error('OK response required body');
     }
-    var response = mapBodyAndHeader(body, header);
-    response.statusCode = 200;
-    return response;
-}
-
-httpResponse.Created = function Created(body, header=null){
     response = mapBodyAndHeader(body, header);
-    response.statusCode = 201;
-    return response;
+    return this.__responseMapper(200);
 }
 
-httpResponse.Accepted = function Accepted(body, header=null){
+ServerResponse.prototype.Created = function Created(body, header=null){
     response = mapBodyAndHeader(body, header);
-    response.statusCode = 202;
-    return response;
+    return this.__responseMapper(201);
 }
 
-
-httpResponse.BadRequest = function BadRequest(body="Bad Request", header=null){
+ServerResponse.prototype.Accepted = function Accepted(body, header=null){
     response = mapBodyAndHeader(body, header);
-    response.statusCode = 400;
-    return response;
+    return this.__responseMapper(202);
 }
 
-httpResponse.Unauthorized = function Unauthorized(body="Unauthorized", header=null){
+
+ServerResponse.prototype.BadRequest = function BadRequest(body="Bad Request", header=null){
     response = mapBodyAndHeader(body, header);
-    response.statusCode = 401;
-    return response;
+    return this.__responseMapper(400);
 }
 
-httpResponse.Forbidden = function Forbidden(body="Forbidden", header=null){
+ServerResponse.prototype.Unauthorized = function Unauthorized(body="Unauthorized", header=null){
     response = mapBodyAndHeader(body, header);
-    response.statusCode = 403;
-    return response;
+    return this.__responseMapper(401);
 }
 
-httpResponse.NotFound = function(body="Not Found", header=null){
+ServerResponse.prototype.Forbidden = function Forbidden(body="Forbidden", header=null){
     response = mapBodyAndHeader(body, header);
-    response.statusCode = 404;
-    return response;
+    return this.__responseMapper(403);
 }
 
-httpResponse.MethodNotAllowed = function MethodNotAllowed(body="Method Not Allowed", header=null){
+ServerResponse.prototype.NotFound = function(body="Not Found", header=null){
+    response = mapBodyAndHeader(body, header);
+    return this.__responseMapper(404);
+}
+
+ServerResponse.prototype.MethodNotAllowed = function MethodNotAllowed(body="Method Not Allowed", header=null){
     response = mapBodyAndHeader(body, header);
     response.statusCode = 405;
-    return response;
+    return this.__responseMapper(405);
 }
 
-httpResponse.NotAcceptable = function NotAcceptable(body="Not Acceptable", header=null){
+ServerResponse.prototype.NotAcceptable = function NotAcceptable(body="Not Acceptable", header=null){
     response = mapBodyAndHeader(body, header);
     response.statusCode = 406;
-    return response;
+    return this.__responseMapper(406);
 }
 
-httpResponse.InternalServerError = function InternalServerError(body="Internal Server Error", header=null){
+ServerResponse.prototype.InternalServerError = function InternalServerError(body="Internal Server Error", header=null){
     response = mapBodyAndHeader(body, header);
     response.statusCode = 500;
-    return response;
+    return this.__responseMapper(500);
 }
 
-httpResponse.NotImplemented = function NotImplemented(body="Not Implemented", header=null){
+ServerResponse.prototype.NotImplemented = function NotImplemented(body="Not Implemented", header=null){
     response = mapBodyAndHeader(body, header);
-    response.statusCode = 501;
-    return response;
+    return this.__responseMapper(501);
 }
 
-httpResponse.BadGateway = function BadGateway(body="Bad Gateway", header=null){
+ServerResponse.prototype.BadGateway = function BadGateway(body="Bad Gateway", header=null){
     response = mapBodyAndHeader(body, header);
     response.statusCode = 502;
-    return response;
+    return this.__responseMapper(502);
 }
 
-httpResponse.ServiceUnavailable = function ServiceUnavailable(body="Service Unavailable", header=null){
+ServerResponse.prototype.ServiceUnavailable = function ServiceUnavailable(body="Service Unavailable", header=null){
     // default `Retry-After` 600 sec
     response = mapBodyAndHeader(body, header);
     response.header = addHeaderIfNotExists(response.header, 'Retry-After', 600);
-    response.statusCode = 503;
-    return response;
+    return this.__responseMapper(503);
 }
 
-module.exports = httpResponse;
+module.exports = ServerResponse;
