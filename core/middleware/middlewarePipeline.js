@@ -1,20 +1,20 @@
 
 
-function Middleware(){
+function MiddlewarePipeline(){
     this.mapper={}
 }
 
 
-// pipelining middleware
-Middleware.prototype.use=function (path,callback){
+// pipelining Pipeline
+MiddlewarePipeline.prototype.use=function (path,callback){
     if(!(!!this.mapper[path]))
         this.mapper[path]=[]
     this.mapper[path].push(callback)
 }
 
 
-// applying middleware
-Middleware.prototype.apply=function (path,req,res){
+// applying Pipeline
+MiddlewarePipeline.prototype.apply=function (path,req,res){
     let middlewareList=this.mapper[path]
     
     if(!!middlewareList===false)
@@ -32,4 +32,4 @@ Middleware.prototype.apply=function (path,req,res){
     })
 }
 
-module.exports=new Middleware()
+module.exports=new MiddlewarePipeline()

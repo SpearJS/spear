@@ -1,7 +1,7 @@
 function Cache(){
 }
 
-Cache.prototype.useCacheControl=function(cacheConfig){
+Cache.prototype.useCacheControl=function(cacheConfig=""){
     return (req,res,next)=>{
         if(cacheConfig.length)
             res.setHeader('Cache-Control',cacheConfig)

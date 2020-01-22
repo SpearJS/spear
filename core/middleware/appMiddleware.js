@@ -1,8 +1,9 @@
-let middleware=require('./middleware')
+let middlewarePipeline=require('./middlewarePipeline')
 
 // let routeMidleware=require('./routerMiddleware')
 
 function AppMiddleware(){
+    
 }
 
 AppMiddleware.prototype.use = (...callbacks)=> {
@@ -15,7 +16,7 @@ AppMiddleware.prototype.use = (...callbacks)=> {
             path=path+callbacks[index]
         }
         else{
-            middleware.use(path,callbacks[index])
+            middlewarePipeline.use(path,callbacks[index])
         }
         index++;
     }

@@ -2,30 +2,25 @@ var server = require('./core/server');
 var router = require('./core/router').router;
 var httpResponse = require('./core/response');
 
-let cache=require('./core/builtinMiddleware/cache')
-let cookie=require('./core/builtinMiddleware/cookies')
-let cors=require('./core/builtinMiddleware/cors')
+let cache=require('./core/builtinMiddleware/http/cache')
+let cookie=require('./core/builtinMiddleware/http/cookies')
+let cors=require('./core/builtinMiddleware/http/cors')
 
 var routing = function(){
-    router.get('/user/', function(req, res){
-        // res.writeHead(404, {});
-        // res.write('Not Found !!!!!');
-        // return res.end();
+    router.get('/user2/', function(req,res){
+        console.log("hello");
         res.setCookie("token2","Token2===",{"Expires":"Wed, 21 Oct 2021 07:28:00 GMT","httpOnly":true})
-        res.setCacheControl("no cache")
-        return httpResponse.NotFound();
-    });
-
+        res.setCacheControl("no store")
+        return httpResponse.NotFound("not found");
+    },()=>console.log("user2 middle"));
     router.post('/user-2/',function(req, res){
         return httpResponse.OK('OK');
-    },(req,res,next)=>console.log("m2"));
+    });
 }
 
-server.use(cache.useCacheControl("public,max-age=0"))
-server.use(cookie.useCookie("name","akash",{"Expires":"Wed, 21 Oct 2021 07:28:00 GMT","httpOnly":true}))
-// server.use(cookie.useCookie("token1","Token1==="))
-
+server.use(cache.useCacheControl())
+server.use(cookie.useCookie())
 server.use(cors.allowAnyOrigin())
-server.use((req,res,next)=>{console.log("m1"),next()},routing())
 
+server.use('/api/user',(req,res,next)=>{console.log("m1");next()},routing())
 server.start();

@@ -1,15 +1,12 @@
 var http = require('http');
 var url = require('url');
 let appMiddleware=require('../core/middleware/appMiddleware')
-let cors=require('../core/builtinMiddleware/cors')
-let cookie=require('../core/builtinMiddleware/cookies')
-let cache=require('../core/builtinMiddleware/cache')
+let middleware=require('./middleware/middlewarePipeline')
 
 
 var __controllerMap = require('./router').__controllerMap;
 
 // middleware
-let middleware=require('./middleware/middleware')
 
 var serverError = function serverError(req, res){
     res.writeHead(500, {});
