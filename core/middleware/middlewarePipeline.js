@@ -4,6 +4,25 @@ function MiddlewarePipeline(){
     this.mapper={}
 }
 
+MiddlewarePipeline.prototype.getContextMiddlewareList=function(uriPath) {
+    let paths=uriPath.split('/')
+    paths.pop()
+
+    let middlewareList=[]
+    let currentPath=""
+    
+    paths.forEach(path=>{    
+        if(path!=="")
+            currentPath=currentPath+'/'+path
+            console.log("Path = ",currentPath,' middleware = ',this.mapper[currentPath]);        
+        if(!!this.mapper[currentPath]===true)
+        {
+            middlewareList=[...middlewareList,...this.mapper[currentPath]]
+        }
+    })
+    
+    return middlewareList;
+}
 
 // pipelining Pipeline
 MiddlewarePipeline.prototype.use=function (path,callback){
@@ -14,11 +33,10 @@ MiddlewarePipeline.prototype.use=function (path,callback){
 
 
 // applying Pipeline
-MiddlewarePipeline.prototype.apply=function (path,req,res){
-    let middlewareList=this.mapper[path]
+MiddlewarePipeline.prototype.apply=function (uriPath="",req,res){
     
-    // console.log('---->\n\n',path,'<------\n\n\n');
-    
+    let middlewareList=[]
+    middlewareList=this.getContextMiddlewareList(uriPath)
 
     if(!!middlewareList===false)
         return

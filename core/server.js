@@ -1,6 +1,6 @@
 var http = require('http');
 var url = require('url');
-let appMiddleware=require('../core/middleware/appMiddleware')
+let requestMiddleware=require('./middleware/requestMiddleware')
 let middlewarePipeline=require('./middleware/middlewarePipeline')
 
 
@@ -21,7 +21,6 @@ server.start = function start() {
     http.createServer(function(req, res){
         var uri = url.parse(req.url, true);
         // apply 'root=/' middleware
-        middlewarePipeline.apply('',req,res)
         // @TODO handle the last slash '/' in url pathname
         
         if(typeof __controllerMap[req.method] === 'undefined'){
@@ -31,14 +30,27 @@ server.start = function start() {
         else{
             var result = __controllerMap[req.method].find(item=> item.path === uri.pathname);
             if(result){ 
-                // applying middleware in route
-                if(typeof result.options==='function'){
-                    appMiddleware.use(result.path,result.options(req,res,next))
-                    middlewarePipeline.apply(result.path,req,res)
-                }           
+                
+
+
+                // use route middleware
+                let routeMiddlewareList=[]
+                if(!!result.options["middlware"]===true)
+                    routeMiddlewareList=result.options["middlware"] 
+                
+                routeMiddlewareList.forEach(middlware => {
+                    if(typeof middlware==='function'){
+                        requestMiddleware.use(result.path.substring(0,result.path.length-1),middlware)
+                    } 
+                });           
+                // applying middleware
+                middlewarePipeline.apply(uri.pathname,req,res)
+                
+                
+                
                 // filter the request here
                 // check all credentials and middleware
-
+                
                 var controllerResponse = result.controller(req, res);
                 console.log(`${req.method} ${uri.pathname} ${controllerResponse.statusCode} HTTP/1.1`);
                 if(res.__proto__ === controllerResponse.__proto__){
@@ -60,7 +72,7 @@ server.start = function start() {
 }
 
 
-server.use=appMiddleware.use
+server.use=requestMiddleware.use
 
 
 
