@@ -6,7 +6,7 @@ let cors=require('./core/builtinMiddleware/http/cors')
 
 
 var routing = function(){
-    router.get('user/1', function(req, res){
+    router.get('/api/user/1/', function(req, res){
         // res.writeHead(404, {});
         // res.write('Not Found !!!!!');
         // return res.end();

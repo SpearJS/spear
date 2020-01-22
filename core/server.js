@@ -35,13 +35,18 @@ server.start = function start() {
                 if(!!result.options["middlware"]===true)
                     routeMiddlewareList=result.options["middlware"] 
                 
+                    let usePath=result.path
+                if(result.path[result.path.length-1]==='/')
+                    usePath=result.path.substring(0,result.path.length-1)
+                    
                 routeMiddlewareList.forEach(middlware => {
                     if(typeof middlware==='function'){
-                        requestMiddleware.use(result.path.substring(0,result.path.length-1),middlware)
+                        requestMiddleware.use(usePath,middlware)
                     } 
                 });           
                 // applying middleware
-                middlewarePipeline.apply(uri.pathname,req,res)
+                middlewarePipeline.apply(parsedUrl.pathname,req,res)
+                middlewarePipeline.clearMapper(usePath)
                 // Middleware
                 
 
