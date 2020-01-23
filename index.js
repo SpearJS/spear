@@ -17,10 +17,8 @@ var routing = function(){
         return res.Accepted('wow');
     },{"middlware":[(req,res,next)=>{console.log("m5");next()},(req,res,next)=>console.log("m6")]});
 
-    router.post('/',function(req, res){
-        return res.OK('OK');
-    });
 }
+
 // map routes before starting the server
 server.use(cache.useCacheControl())
 server.use(cookie.useCookie())

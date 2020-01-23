@@ -4,6 +4,7 @@ let requestMiddleware=require('./middleware/requestMiddleware')
 let middlewarePipeline=require('./middleware/middlewarePipeline')
 
 
+
 var __controllerMap = require('./router').__controllerMap;
 var cleanPrefixSuffix = require('./router').cleanPrefixSuffix;
 let Response = require('./response');
@@ -49,8 +50,7 @@ server.start = function start() {
                 middlewarePipeline.clearMapper(usePath)
                 // Middleware
                 
-
-
+          
                 let controllerResponse = result.controller(req,res);
                 console.log(`${req.method} ${parsedUrl.pathname} ${controllerResponse.statusCode} HTTP/1.1`);
                 return controllerResponse;
