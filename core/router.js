@@ -9,9 +9,24 @@ var __controllerMap = {
     OPTIONS : []
 };
 
+function cleanPrefixSuffix(path){
+    if(typeof path !== 'string'){
+        throw new Error('invalid url path');
+    }
+    if(path.startsWith('/') === false){
+        path = '/'+path;
+    }
+    if(path.endsWith('/') === false){
+        path = path+'/'
+    }
+    return path;
+}
+
+
 var router = router = {};
 
 router.get = function GET(path, controller, options={}){
+    path = cleanPrefixSuffix(path);
     __controllerMap.GET.push({
         path : path,
         controller : controller,
@@ -20,6 +35,7 @@ router.get = function GET(path, controller, options={}){
 }
 
 router.post = function POST(path, controller, options={}){
+    path = cleanPrefixSuffix(path);
     __controllerMap.POST.push({
         path : path,
         controller : controller,
@@ -28,6 +44,7 @@ router.post = function POST(path, controller, options={}){
 }
 
 router.put = function PUT(path, controller, options={}){
+    path = cleanPrefixSuffix(path);
     __controllerMap.PUT.push({
         path : path,
         controller : controller,
@@ -36,6 +53,7 @@ router.put = function PUT(path, controller, options={}){
 }
 
 router.delete = function DELETE(path, controller, options={}){
+    path = cleanPrefixSuffix(path);
     __controllerMap.DELETE.push({
         path : path,
         controller : controller,
@@ -44,6 +62,7 @@ router.delete = function DELETE(path, controller, options={}){
 }
 
 router.head = function HEAD(path, controller, options={}) {
+    path = cleanPrefixSuffix(path);
     __controllerMap.HEAD.push({
         path : path,
         controller : controller,
@@ -52,6 +71,7 @@ router.head = function HEAD(path, controller, options={}) {
 }
 
 router.patch = function PETCH(path, controller, options={}){
+    path = cleanPrefixSuffix(path);
     __controllerMap.PATCH.push({
         path : path,
         controller : controller,
@@ -60,6 +80,7 @@ router.patch = function PETCH(path, controller, options={}){
 }
 
 router.trace = function TRACE(path, controller, options={}){
+    path = cleanPrefixSuffix(path);
     __controllerMap.TRACE.push({
         path : path,
         controller : controller,
@@ -68,6 +89,7 @@ router.trace = function TRACE(path, controller, options={}){
 }
 
 router.options = function OPTIONS(path, controller, options={}){
+    path = cleanPrefixSuffix(path);
     __controllerMap.OPTIONS.push({
         path : path,
         controller : controller,
@@ -78,5 +100,6 @@ router.options = function OPTIONS(path, controller, options={}){
 
 module.exports = {
     router : router,
-    __controllerMap : __controllerMap
+    __controllerMap : __controllerMap,
+    cleanPrefixSuffix : cleanPrefixSuffix
 }
